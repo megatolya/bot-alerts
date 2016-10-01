@@ -60,7 +60,7 @@ setInterval(function () {
     }).then(function (json) {
         return getOnlyFreshMessage(json).then(function (message) {
             chrome.tabs.query({active: true}, function(tabs) {
-                for (tab of tabs) {
+                for (let tab of tabs) {
                     chrome.tabs.sendMessage(tab.id, {message});
                     console.log('sent', message);
                 }
