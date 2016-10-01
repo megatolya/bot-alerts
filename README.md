@@ -10,7 +10,7 @@ Create your telegram bot and ask it's token.
 
 ![](https://raw.githubusercontent.com/megatolya/bot-alerts/master/misc/1.png)
 
-Install this extension and paste token in options popup.
+[Install this extension](https://chrome.google.com/webstore/detail/bot-alerts/pnldgigpijhnhnclclgflefblcenpamb) and paste token in options popup.
 
 ![](https://raw.githubusercontent.com/megatolya/bot-alerts/master/misc/2.png)
 
