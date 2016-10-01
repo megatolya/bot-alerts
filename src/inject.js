@@ -1,4 +1,5 @@
 var className = '__alerts-container';
+
 function getAlertContainer() {
     var container = document.querySelector('.' + className);
 
@@ -11,15 +12,10 @@ function getAlertContainer() {
     return container;
 }
 
-function makeBoom() {
-}
-
 function updateMessage(text, isNew) {
     var container = getAlertContainer();
     container.innerText = text;
 }
-
-var prevMessage = {};
 
 chrome.extension.onMessage.addListener(function (request, sender, response) {
     var message = request.message;
@@ -29,6 +25,4 @@ chrome.extension.onMessage.addListener(function (request, sender, response) {
     }
 
     updateMessage(message.text);
-
-    prevMessage = message;
 });

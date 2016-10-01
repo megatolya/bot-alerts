@@ -1,14 +1,8 @@
 var currentToken;
-var currentMute = false;
 
 function updateToken(token) {
     chrome.storage.sync.set({token});
     currentToken = token;
-}
-
-function updateMute(mute) {
-    chrome.storage.sync.set({mute});
-    currentMute = mute;
 }
 
 function getOnlyFreshMessage(json) {
@@ -40,34 +34,22 @@ function getOnlyFreshMessage(json) {
 }
 
 chrome.storage.sync.get({
-    token: null,
-    mute: false
+    token: null
 }, function (data) {
     currentToken = data.token;
-    currentMute = data.mute;
     console.log('initial settings', data);
 });
 
-//example of using a message handler from the inject scripts
 chrome.extension.onMessage.addListener(
   function(message, sender, sendResponse) {
       if ('newToken' in message) {
           updateToken(message.newToken);
-      }
-
-      if ('mute' in message) {
-          updateMute(message.mute);
       }
 });
 
 const pollingUrl = 'https://api.telegram.org/bot{token}/getUpdates';
 
 setInterval(function () {
-    if (currentMute) {
-        console.log('mute');
-        return;
-    }
-
     if (!currentToken) {
         console.warn('no token is set');
         return;
@@ -85,6 +67,6 @@ setInterval(function () {
             });
         });
     }).catch(function (err) {
-        console.log('failed!', err);
+        console.error('failed!', err);
     });
 }, 3000);
