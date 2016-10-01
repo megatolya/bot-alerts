@@ -1,0 +1,12 @@
+.__alerts-container {
+    position: fixed;
+    top: 50%;
+    font-size: 50px;
+    font-family: sans-serif;
+    left: 0;
+    width: 100%;
+    margin-top: -25px;
+    text-align: center;
+    z-index: 999;
+    color: black;
+}
