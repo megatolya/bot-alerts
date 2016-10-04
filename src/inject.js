@@ -12,17 +12,19 @@ function getAlertContainer() {
     return container;
 }
 
-function updateMessage(text, isNew) {
+function updateMessageField(freshMessages) {
     var container = getAlertContainer();
-    container.innerText = text;
+    const listItemsHTML = freshMessages.map(message => `<li>${message.text}</li>`);
+    
+    container.innerText = `<ul>${listItemsHTML}</ul>`;
 }
 
 chrome.extension.onMessage.addListener(function (request, sender, response) {
-    var message = request.message;
+    var freshMessages = request.freshMessages;
 
-    if (!message) {
+    if (!freshMessages) {
         return;
     }
 
-    updateMessage(message.text);
+    updateMessageField(freshMessages);
 });
