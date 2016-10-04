@@ -16,7 +16,7 @@ function updateMessageField(freshMessages) {
     var container = getAlertContainer();
     const listItemsHTML = freshMessages.map(message => `<li>${message.text}</li>`);
     
-    container.innerText = `<ul>${listItemsHTML}</ul>`;
+    container.innerHTML = `<ul>${listItemsHTML}</ul>`;
 }
 
 chrome.extension.onMessage.addListener(function (request, sender, response) {
