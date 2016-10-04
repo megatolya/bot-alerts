@@ -12,20 +12,20 @@ function getOnlyFreshMessages(json) {
             return reject('Request failed');
         }
 
-        const freshMessages = json.result.reduce((memo, data) => {
-            if (memo.length >= FRESH_MESSAGES_NUM) {
+        const freshMessages = json.result.reverse().reduce((memo, data) => {
+            var messageData = data.message || data.edited_message;
+
+            if (!messageData || !messageData.text) {
                 return memo;
             }
 
-            var messageData = data.message || data.edited_message;
-
-            if (!messageData) {
+            if (memo.length >= FRESH_MESSAGES_NUM) {
                 return memo;
             }
 
             memo.push(messageData);
             return memo;
-        }, []);
+        }, []).reverse();
 
         if (!freshMessages.length) {
             return reject('No valid messages');
@@ -63,7 +63,14 @@ setInterval(function () {
         return getOnlyFreshMessages(json).then(function (messages) {
             const freshMessages = messages.map(messageData => ({
                 id: messageData.message_id,
-                text: messageData.text
+                text: messageData.text,
+                from: messageData.from
+                    ? (
+                        (messageData.from.username ? ('@' + messageData.from.username) : null)
+                        || messageData.from.first_name
+                        || ''
+                    )
+                    : ''
             }));
 
             chrome.tabs.query({active: true}, function(tabs) {

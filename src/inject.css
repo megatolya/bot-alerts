@@ -1,12 +1,19 @@
 .__alerts-container {
     position: fixed;
-    top: 50%;
-    font-size: 8em;
+    right: 0;
+    text-align: right;
+    font-size: 6em;
+    bottom: 0 !important;
+    margin-top: 0;
+    margin-left: 0;
     font-family: sans-serif;
-    left: 0;
     width: 100%;
-    margin-top: -25px;
-    text-align: center;
+    text-align: right;
     z-index: 999;
     color: black;
+}
+
+.__alerts-from {
+    font-size: 0.4em;
+    color: grey;
 }

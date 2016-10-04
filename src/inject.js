@@ -14,8 +14,12 @@ function getAlertContainer() {
 
 function updateMessageField(freshMessages) {
     var container = getAlertContainer();
-    const listItemsHTML = freshMessages.map(message => `<li>${message.text}</li>`);
-    
+    const listItemsHTML = freshMessages.map(message => (
+        `<li>
+            <span class="__alerts-from">${message.from}: </span>
+            <span class="__alerts-text">${message.text}</span>
+        </li>`
+    )).join('');
     container.innerHTML = `<ul>${listItemsHTML}</ul>`;
 }
 
