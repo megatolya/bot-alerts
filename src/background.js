@@ -1,4 +1,4 @@
-const FRESH_MESSAGES_NUM = 3;
+var FRESH_MESSAGES_NUM = 4;
 var currentToken;
 
 function updateToken(token) {
@@ -12,17 +12,14 @@ function getOnlyFreshMessages(json) {
             return reject('Request failed');
         }
 
-        const freshMessages = json.result.reverse().reduce((memo, data) => {
+        var freshMessages = json.result.reverse().reduce((memo, data) => {
             var messageData = data.message || data.edited_message;
 
             if (!messageData || !messageData.text) {
                 return memo;
             }
 
-            if (memo.length >= FRESH_MESSAGES_NUM) {
-                return memo;
-            }
-
+            messageData.update_id = data.update_id;
             memo.push(messageData);
             return memo;
         }, []).reverse();
@@ -49,7 +46,10 @@ chrome.extension.onMessage.addListener(
       }
 });
 
-const pollingUrl = 'https://api.telegram.org/bot{token}/getUpdates';
+var currentOffset = -1;
+var currentMessages = [];
+
+var pollingUrl = 'https://api.telegram.org/bot{token}/getUpdates?offset={offset}';
 
 setInterval(function () {
     if (!currentToken) {
@@ -57,11 +57,11 @@ setInterval(function () {
         return;
     }
 
-    fetch(pollingUrl.replace('{token}', currentToken)).then(function (response) {
+    fetch(pollingUrl.replace('{token}', currentToken).replace('{offset}', currentOffset)).then(function (response) {
         return response.json();
     }).then(function (json) {
         return getOnlyFreshMessages(json).then(function (messages) {
-            const freshMessages = messages.map(messageData => ({
+            var freshMessages = messages.map(messageData => ({
                 id: messageData.message_id,
                 text: messageData.text,
                 from: messageData.from
@@ -70,17 +70,32 @@ setInterval(function () {
                         || messageData.from.first_name
                         || ''
                     )
-                    : ''
+                    : '',
+                updateId: messageData.update_id
             }));
 
-            chrome.tabs.query({active: true}, function(tabs) {
-                for (let tab of tabs) {
-                    chrome.tabs.sendMessage(tab.id, {freshMessages});
-                    console.log('sent', freshMessages);
+            var ids = [];
+
+            currentMessages = currentMessages.concat(freshMessages).filter(function (message) {
+                if (ids.indexOf(message.updateId) !== -1) {
+                    return false;
                 }
+
+                ids.push(message.updateId);
+                return true;
+            });
+            currentOffset = currentMessages[currentMessages.length - 1].updateId;
+            var messagesToShow = currentMessages.slice().reverse().slice(0, FRESH_MESSAGES_NUM).reverse();
+
+            chrome.tabs.query({active: true}, function(tabs) {
+                for (var tab of tabs) {
+                    chrome.tabs.sendMessage(tab.id, {messagesToShow});
+                }
+                console.log('sent', messagesToShow);
+                console.log('all messages', currentMessages);
             });
         });
     }).catch(function (err) {
         console.error('failed!', err);
     });
-}, 3000);
+}, 500);

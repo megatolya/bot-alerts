@@ -24,11 +24,11 @@ function updateMessageField(freshMessages) {
 }
 
 chrome.extension.onMessage.addListener(function (request, sender, response) {
-    var freshMessages = request.freshMessages;
+    var messagesToShow = request.messagesToShow;
 
-    if (!freshMessages) {
+    if (!messagesToShow) {
         return;
     }
 
-    updateMessageField(freshMessages);
+    updateMessageField(messagesToShow);
 });
