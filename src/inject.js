@@ -12,12 +12,32 @@ function getAlertContainer() {
     return container;
 }
 
+var entityMap = {
+    '&': "&amp;",
+    '<': "&lt;",
+    '>': "&gt;",
+    '"': '&quot;',
+    '\'': '&#39;',
+    '/': '&#x2F;'
+};
+
+function escapeHtml(string) {
+    return String(string).replace(/[&<>"'\/]/g, function (s) {
+        return entityMap[s];
+    });
+}
+
 function updateMessageField(freshMessages) {
     var container = getAlertContainer();
+    freshMessages.slice().forEach(function (message) {
+        if (message.text.length > 28) {
+            message.text = message.text.slice(0, 26) + '…';
+        }
+    });
     const listItemsHTML = freshMessages.map(message => (
-        `<li>
-            <span class="__alerts-from">${message.from}: </span>
-            <span class="__alerts-text">${message.text}</span>
+        `<li class="__alerts-message">
+            <span class="__alerts-from">${escapeHtml(message.from)}: </span>
+            <span class="__alerts-text">${escapeHtml(message.text)}</span>
         </li>`
     )).join('');
     container.innerHTML = `<ul>${listItemsHTML}</ul>`;
